@@ -1,14 +1,21 @@
 {
   "name": "usb_play",
   "description": "USB Playground",
-  "scripts":{
-    "start":"node -r babel-register"
+  "scripts": {
+    "start": "node -r babel-register"
   },
   "dependencies": {
     "usb": "^1.1.1"
   },
   "devDependencies": {
-    "babel-preset-es2015-node5": "^1.1.2",
+    "babel-core": "^6.7.2",
+    "babel-plugin-transform-async-to-generator": "^6.7.0",
+    "babel-plugin-transform-es2015-destructuring": "^6.6.5",
+    "babel-plugin-transform-es2015-function-name": "^6.5.0",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.7.0",
+    "babel-plugin-transform-es2015-parameters": "^6.7.0",
+    "babel-plugin-transform-es2015-sticky-regex": "^6.5.0",
+    "babel-plugin-transform-es2015-unicode-regex": "^6.5.0",
     "babel-register": "^6.7.2"
   }
 }
