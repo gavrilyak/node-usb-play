@@ -1,8 +1,6 @@
 import usb from 'usb';
 
-function sleep$(ms){
-  return new Promise((resolve)=>setTimeout(resolve, ms)) 
-}
+const sleep$ = ms => new Promise((resolve)=>setTimeout(resolve, ms))
 
 usb.InEndpoint.prototype.$transfer =
 usb.OutEndpoint.prototype.$transfer =
@@ -13,18 +11,17 @@ function $transfer(lenOrData){
 }
 
 
-
 async function main(){
+  //const device = usb.findByIds(0x8087, 0x0020);
   const device = usb.findByIds(0x0905, 0x0020);
   if(!device) throw Error("Device not found")
-  //const device = usb.findByIds(0x8087, 0x0020);
   device.open();
-  const interruptIface = device.interface(0);
-  const bulkIface = device.interface(1);
 
+  const interruptIface = device.interface(0);
   if(interruptIface.isKernelDriverActive()){
     interruptIface.detachKernelDriver();
   }
+  const bulkIface = device.interface(1);
 
   interruptIface.claim();
   bulkIface.claim();
@@ -57,4 +54,4 @@ async function main(){
   }
 }
 
-main().then(null,console.error);
+main().catch(e=>console.error(e.stack))
