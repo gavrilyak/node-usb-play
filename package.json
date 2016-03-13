@@ -16,7 +16,8 @@
     "babel-plugin-transform-es2015-parameters": "^6.7.0",
     "babel-plugin-transform-es2015-sticky-regex": "^6.5.0",
     "babel-plugin-transform-es2015-unicode-regex": "^6.5.0",
-    "babel-register": "^6.7.2"
+    "babel-register": "^6.7.2",
+    "es7-sleep": "^1.0.0"
   },
   "engine": "node >= 5.8.0"
 }

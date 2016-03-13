@@ -1,6 +1,5 @@
 import usb from 'usb';
-
-const sleep$ = ms => new Promise((resolve)=>setTimeout(resolve, ms))
+import sleep from 'es7-sleep';
 
 usb.InEndpoint.prototype.$transfer =
 usb.OutEndpoint.prototype.$transfer =
@@ -30,18 +29,18 @@ async function main(){
   //LCD
   const lcd = bulkIface.endpoint(0x08);
   await lcd.$transfer("\x01\x08\x01\x06\x0D");
-  await sleep$(20);
+  await sleep(20);
   await lcd.$transfer("\x00Hello, world!");
 
   //LED
   console.log("Testing LED");
   const led= interruptIface.endpoint(0x01);
   await led.$transfer(new Buffer([0x07, 0x00]));
-  await sleep$(1000);
+  await sleep(1000);
   await led.$transfer(new Buffer([0x07, 0x55]));
-  await sleep$(1000);
+  await sleep(1000);
   await led.$transfer(new Buffer([0x07, 0xAA]));
-  await sleep$(1000);
+  await sleep(1000);
   await led.$transfer(new Buffer([0x07, 0xFF]));
 
   //KBD
