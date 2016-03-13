@@ -1,9 +1,10 @@
 {
   "name": "usb_play",
   "description": "USB Playground",
+  "scripts":{
+    "start":"node -r babel-register"
+  },
   "dependencies": {
-    "co": "^4.6.0",
-    "co-sleep": "0.0.1",
     "usb": "^1.1.1"
   },
   "devDependencies": {
