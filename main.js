@@ -2,12 +2,12 @@ import sleep from 'es7-sleep';
 
 import usb from 'usb';
 import promisify from 'es6-promisify';
-usb.InEndpoint.prototype.transfer        = promisify(usb.InEndpoint.prototype.transfer);
-usb.OutEndpoint.prototype.transfer       = promisify(usb.OutEndpoint.prototype.transfer);
+usb.InEndpoint.prototype.transfer         = promisify(usb.InEndpoint.prototype.transfer);
+usb.OutEndpoint.prototype.transfer        = promisify(usb.OutEndpoint.prototype.transfer);
 usb.OutEndpoint.prototype.transferWithZLP = promisify(usb.OutEndpoint.prototype.transferWithZLP);
-usb.Device.prototype.$setConfiguration     = promisify(usb.Device.prototype.setConfiguration);
-//usb.Interface.prototype.$release           = promisify(usb.Interface.prototype.release);
-//usb.Interface.prototype.$setAltSetting     = promisify(usb.Interface.prototype.setAltSetting);
+usb.Device.prototype.setConfiguration     = promisify(usb.Device.prototype.setConfiguration);
+//usb.Interface.prototype.release           = promisify(usb.Interface.prototype.release);
+//usb.Interface.prototype.setAltSetting     = promisify(usb.Interface.prototype.setAltSetting);
 
 
 async function main(){
