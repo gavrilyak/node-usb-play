@@ -1,13 +1,13 @@
-import usb from 'usb';
 import sleep from 'es7-sleep';
 
-usb.InEndpoint.prototype.$transfer =
-usb.OutEndpoint.prototype.$transfer =
-function $transfer(lenOrData){
-  return new Promise((resolve, reject)=>
-    this.transfer(lenOrData, (err, res)=> err?reject(err):resolve(res))
-  )
-}
+import usb from 'usb';
+import promisify from 'es6-promisify';
+usb.InEndpoint.prototype.transfer        = promisify(usb.InEndpoint.prototype.transfer);
+usb.OutEndpoint.prototype.transfer       = promisify(usb.OutEndpoint.prototype.transfer);
+usb.OutEndpoint.prototype.transferWithZLP = promisify(usb.OutEndpoint.prototype.transferWithZLP);
+usb.Device.prototype.$setConfiguration     = promisify(usb.Device.prototype.setConfiguration);
+//usb.Interface.prototype.$release           = promisify(usb.Interface.prototype.release);
+//usb.Interface.prototype.$setAltSetting     = promisify(usb.Interface.prototype.setAltSetting);
 
 
 async function main(){
@@ -28,27 +28,27 @@ async function main(){
   console.log("Testing LCD");
   //LCD
   const lcd = bulkIface.endpoint(0x08);
-  await lcd.$transfer("\x01\x08\x01\x06\x0D");
+  await lcd.transfer([0x01, 0x08, 0x01, 0x06, 0x0D]);
   await sleep(20);
-  await lcd.$transfer("\x00Hello, world!");
+  await lcd.transfer("\x00Hello, world!");
 
   //LED
   console.log("Testing LED");
   const led= interruptIface.endpoint(0x01);
-  await led.$transfer(new Buffer([0x07, 0x00]));
+  await led.transfer([0x07, 0x00]);
   await sleep(1000);
-  await led.$transfer(new Buffer([0x07, 0x55]));
+  await led.transfer([0x07, 0x55]);
   await sleep(1000);
-  await led.$transfer(new Buffer([0x07, 0xAA]));
+  await led.transfer([0x07, 0xAA]);
   await sleep(1000);
-  await led.$transfer(new Buffer([0x07, 0xFF]));
+  await led.transfer(new Buffer([0x07, 0xFF]));
 
   //KBD
   console.log("Testing KBD");
   const kbd = interruptIface.endpoint(0x81);
   console.log("Press keys on device, Ctrl-C to cancel");
   while(true) {
-    var kbState = await kbd.$transfer(3);
+    var kbState = await kbd.transfer(3);
     console.log("KB:", kbState);
   }
 }

@@ -17,7 +17,14 @@
     "babel-plugin-transform-es2015-sticky-regex": "^6.5.0",
     "babel-plugin-transform-es2015-unicode-regex": "^6.5.0",
     "babel-register": "^6.7.2",
+    "es6-promisify": "^3.0.0",
     "es7-sleep": "^1.0.0"
   },
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gavrilyak/node-usb-play"
+  },
+  "license": "MIT",
   "engine": "node >= 5.8.0"
 }
