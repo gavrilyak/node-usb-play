@@ -3,13 +3,36 @@ import usb from './usb-async';
 
 process.stdin.setEncoding('utf-8');
 
-function readStdin(){
+function readStream(stream){
   let promise  = new Promise((resolve, reject)=>{
-    process.stdin.once("data", data => {
-      console.log("stdin:", data);
-      resolve(data)
-    });
-    process.stdin.once("end", resolve);
+    function remove(){
+      stream.removeListener("data", onData);
+      stream.removeListener("error", onError);
+      stream.removeListener("end", onEnd);
+    }
+
+    function onData(data){
+      remove();
+      if (data != null) {
+	resolve(data);
+      } else {
+	reject(new Error("Unexpected enpty data in stream"));
+      }
+    }
+
+    function onError(error){
+      remove();
+      reject(error);
+    }
+
+    function onEnd(){
+      remove();
+      resolve(null);
+    }
+
+    stream.on("data", onData);
+    stream.on("error", onError);
+    stream.on("end", onEnd);
   })
   return promise;
 }
@@ -22,8 +45,9 @@ async function main(){
   device.open();
 
   const bulkIface = device.interface(1);
-  let   bulkClaimed = false;
   const interruptIface = device.interface(0);
+
+  let   bulkClaimed = false;
   let   interruptClaimed = false;
   let   reattachInterupt = false;
   try {
@@ -57,23 +81,23 @@ async function main(){
     const kbd = interruptIface.endpoint(0x81);
     console.log("Press keys on device, Ctrl-D to exit");
     let kbdTransferPromise = kbd.transfer(3);
-    let readStdinPromise   = readStdin();
+    let readStdinPromise   = readStream(process.stdin);
 
     loop:
     while (true) {
-      let [code, data] =  await Promise.race([
-        Promise.all([0, kbdTransferPromise]), 
-	Promise.all([1, readStdinPromise])
+      let [source, data] =  await Promise.race([
+        Promise.all(['kb', kbdTransferPromise]), 
+	Promise.all(['in', readStdinPromise])
       ]);
       //console.log(code, data);
 
-      switch (code) {
-	case 0:
+      switch (source) {
+	case 'kb':
 	  console.log("KB:", data);
 	  kbdTransferPromise = kbd.transfer(3);
 	  break;
 
- 	case 1:
+ 	case 'in':
 	  if (!data) {
 	    process.stdin.end();
 	    break loop;
@@ -81,12 +105,12 @@ async function main(){
 	  //console.log("You entered:", data);
 	  await lcd.transfer([0x01, 0x08, 0x01, 0x06, 0x0D]);
 	  await lcd.transfer("\0"  + data.slice(0, -1));
-	  readStdinPromise = readStdin();
+	  readStdinPromise = readStream(process.stdin);
 	  break;
       }
     }
   } finally {
-    console.log("Cleanup");
+    //console.log("Cleanup");
     if (interruptClaimed) {
       await interruptIface.release();
     }
