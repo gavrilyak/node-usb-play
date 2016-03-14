@@ -1,9 +1,13 @@
 import usb from 'usb';
 import promisify from 'es6-promisify';
+
 usb.InEndpoint.prototype.transfer         = promisify(usb.InEndpoint.prototype.transfer);
 usb.OutEndpoint.prototype.transfer        = promisify(usb.OutEndpoint.prototype.transfer);
 usb.OutEndpoint.prototype.transferWithZLP = promisify(usb.OutEndpoint.prototype.transferWithZLP);
 usb.Device.prototype.setConfiguration     = promisify(usb.Device.prototype.setConfiguration);
+usb.Device.prototype.getStringDescriptor  = promisify(usb.Device.prototype.getStringDescriptor);
+
+//FIXME: Interface is not exported, so a little hack to get access to it
 usb.Device.prototype.open=(function wrapOpen(oldOpen){
   return function open(...args){
     var res = oldOpen.apply(this, args);
@@ -14,6 +18,4 @@ usb.Device.prototype.open=(function wrapOpen(oldOpen){
   }
 })(usb.Device.prototype.open);
 export default usb;
-//usb.Interface.prototype.release           = promisify(usb.Interface.prototype.release);
-//usb.Interface.prototype.setAltSetting     = promisify(usb.Interface.prototype.setAltSetting);
- 
+
